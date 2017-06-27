@@ -1,0 +1,101 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat{\fonttbl{\f0\fswiss\fcharset0 Helvetica;}}
+{\*\generator Riched20 10.0.14393}\viewkind4\uc1 
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\b\f0\fs36\lang9 Intro\b0\fs24\par
+\par
+Thank you for purchasing Imperial Fur! This guide will give you a quick overview of some of the settings. First, a word about the shader names. The names 'metallic' and 'specular' are referring to the PBR method used, not the actual presence of metal or specularity. The number following the name is the amount of shells that are used in creating the fur. Higher values result in better quality, but slower render times. The AlphaTest shaders use alpha cutoff to allow the fur to recieve shadows. Note that this only works correctly using the deferred rendering path.\par
+\par
+\b\fs36 Fur Material\b0\fs24\par
+\par
+\b\fs28 Albedo / Diffuse\b0\fs24\par
+Under the section 'Fur Properties' you can setup your fur material. The albedo or diffuse texture will determine the look of the fur. It's alpha channel serves as a height map. Black pixels in the alpha channel will result in no fur rendered, white will be fur at the maximum strand length. It will also effect the actual opacity, so fur closer to the skin blends in more with the skin than fur further out.\par
+\par
+\b\fs28 Specular/Metallness\b0\fs24\par
+The specularity and metalness settings depend upon the shader you are using, and match up with the Unity standard shader definition for those terms.\par
+\par
+\b\fs28 Noise\par
+\b0\fs24 The noise map determines the pattern of the fur. Several noise maps are included, so you don't need to create these for yourself unless you don't like the existing options. AlphaTest shaders have a separate set of noise maps. These are backwards compatible with the old version. The difference is that they specify a different noise for fur closer to the skin vs fur at the tip to allow for fur to get thinner near the tip. These are created by seperating the noise map into channels. On the green channel, select only the brightest colors (Only pur white will work for some noise, maybe a few shades of it for more complex maps). Then invert the selection and set everything except for the brightest colors to black. Be sure to disable mipmapping on the import for best results.\par
+\par
+\b\fs28 Control Map\par
+\b0\fs24 The control map allows more fine tuned control over the fur. Each channel of the map controls a different aspect of the texture. There is a demo scene for each of them to show how to use them.\par
+\par
+\b Height\b0\par
+The Height map goes in the red channel. It performs simliar to the alpha channel of the albedo texture, except that it does not change the opacity of the fur. This map works on a per pixel level, unless the bias map is set to account for it. In that situation, it works on a per vertex level and the same warnings apply for it that are mentioned in the bias map section.\par
+\par
+\b Stiffness\b0\par
+The Stiffness map goes in the blue channel. This will chang the way the fur reacts to the phsyics simulation. All white means that the fur reacts with full intensity. Black means that the fur doesn't react to physics at all. This map is read on a per vertex basis, so you'll need to insure that it lines up with the vertices in your UV shell.\par
+\par
+\b Bias\b0\par
+This map goes in the blue channel and allows you to shrink in the skin instead of pushing out the fur. It can be useful in preventing your model from getting too fat as the fur gets bigger. \par
+\par
+Like the Strength map, this map works on a per vertex level. Things can get tricky using this map. If your model has smoothing set to anything other than purely smooth, then duplicate vertices are created that have different normals. The will pull apart and separate when using a bais map. So be sure your model is set to smooth. Since the map works on a per vertex level, you'll also need to make sure that shared edges in your UV map have the same color. This is because UV maps also create duplicate vertices and having separate values will cause them to pull apart.\par
+\par
+The Bias Factor slider allows you to adjust how much the bias map effects the model. This can be useful if you later decide to adjust the strand length and do not want to recreate the bias map to account for the difference in values.\par
+\par
+The Account for Heightmap check box allows the bias map to also read the heightmap and shrink the model less where there is less height. This is particularly useful if there is skin showing on the heightmap as it prevents the exposed skin from being shrunk in an unwanted fashion. Please not that if enable this feature, then your heightmap must also ensure that all shared edges in the UV map have the same color. Otherwise you will get the same separation issue mentioned above.\par
+\par
+\b\fs28 Strand Density\b0\fs24\par
+This setting will essentially tile the UV coordinates to pack more fur into a smaller space.\par
+\par
+\b\fs28 Max Strand Length\b0\fs24\par
+This should go without saying, but this setting sets the maximum length that a strand can be. Be careful going too high or the fur effect will be lost and the shells will become apparent.\par
+\par
+\b\fs28 Edge Fade\b0\fs24\par
+This setting will fade out the edges of the fur to help it blend in with the background more.\par
+\par
+\b\fs36 Skin Material\b0\fs24\par
+\par
+Imperial Fur differs from other fur shaders in that it allows you to assign a separate material for the skin underneath the fur. The Heightmap demo and Tips demo will show you how making use of this can improve your object.\par
+\par
+\b\fs28 Albedo / Diffuse\b0\fs24\par
+The skin material setup is just like the Unity shader that matches it except for the use of the alpha channel in the albedo / diffuse texture. The alpha channel will change the opacity of the fur that is on top of the skin. So setting the alpha to a low value (dark grey) will result in a peach fuzz type of look. I've found that it almost always looks best to set the alpha pretty low. The Physics demo scene has most of the alpha values set to around 30%\par
+\par
+\b\fs28 Rim Light\b0\fs24\par
+There are three options for rim lighting. You can choose to a natural mode that uses the color of the fur, an ambient mode that is the same color as the ambient light, or you can choose to color the rim light to a user defined value.\par
+\par
+\par
+\b\fs36 Simple Shaders\b0\fs24\par
+\par
+The simple shaders are much faster than the normal shaders. Most of the settings are the same except for a few. The simple shaders don't have an option in the shader to turn the skin material on or off. That is done by selecting either the 'no skin' shader for no skin, or one of the other ones if you want skin. \par
+\par
+For the skinned simple shaders, the skin is drawn using Unity standard shaders using these same setup as above. Non-skinned shaders will draw the fur texture using the Blinn lighting model, which is similar to the lighting on the fur with these shaders.\par
+\par
+\b\fs28 Reflection Mode\b0\fs24\par
+\par
+Since the simple shaders aren't using surface shaders, you'll need to add your own reflection probe if you want to use one. Please note that the reflection settings only apply to the fur. If you want reflections on the skin, use one of the PBR shaders for the skin.\par
+\par
+The reflection settings take a cube map. You have the option of choosing between and HDR and LDR cube map. The easiest way to create a cub map is to temporarily set your Unity Reflection Probe to "Custom" and hit the bake button. It will ask for a location to save the cube map. After saving the map, you can put your reflection probe back to whatever you want it to be and assign the saved cube map to the fur shader.\par
+\par
+\par
+\b\fs36 Physics Script\b0\fs24\par
+\par
+The physics script can be added to the game object that the fur shader is assigned to in order to have the fur react to the physics in the game. There are several settings that need to be discussed. \par
+\par
+\b\fs28 Use Rigidbody\b0\fs24\par
+If you have a rigid body attached to your object, leave this checked. It will use the rigid body's calculations of the velocity and save a few steps. If your game object is not controlled by a rigid body, uncheck this and the script will calculate the velocity between frames manually.\par
+\par
+\b\fs28 Use Physics Gravity\b0\fs24\par
+If this is checked, the gravity value defined in your Unity physics setup will be applied to the fur. If you don't want gravity to effect the fur, or want to use your own gravity value, uncheck this.\par
+\par
+\b\fs28 Physics Enabled\b0\fs24\par
+Turning this off will stop the fur from reacting to movement. This may be useful if you want to use the wind effect, but don't need the extra physics calculations.\par
+\par
+\b\fs28 Wind Enabled\b0\fs24\par
+This determines whether or not the wind effect is added to the physics calculations.\par
+\par
+\b\fs28 Additional Gravity\b0\fs24\par
+This vector will define and additional amount of gravity that is added to the fur. If you have the physics gravity disabled, then this vector will be the only gravity applied to the fur.\par
+\par
+\b\fs28 Max Movement\b0\fs24\par
+This value sets the maximum amount that the fur can move while the forces are acting upon it.\par
+\par
+\b\fs28 Force / Gravity Scale\b0\fs24\par
+These determine how much of the calculated force or gravity is applied to the fur.\par
+\par
+\b\fs28 Force / Wind Damping\b0\fs24\par
+These determine how much the changes in force or wind are smoothed. Higher values will result in quicker changes. Lower ones will result in smoother changes.\par
+\par
+\b\fs28 Min / Max Wind Force\b0\fs24\par
+
+\pard\sa200\sl276\slmult1 These determine the maximum and minimum values that the randomized wind can fall between. It may be important to note that with gravity and other forces on, this setting will need to be higher in order for you to see the effect of the wind.\par
+}
+ 
